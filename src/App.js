@@ -5,30 +5,19 @@ import Person from './Person/Person';
 class App extends Component {
   state = {
     persons: [
-      { name: "Martin", age: 24 },
-      { name: "Maria", age: 23 }
+      { id: '001', name: "Martin", age: '24' },
+      { id: '002', name: "Maria", age: '23' }
     ],
     showPersons: false
   }
 
-  switchNameHandler = (newName) => {
-    this.setState(
-      {
-        persons: [
-          { name: newName || 'Juan', age: 25 },
-          { name: 'Maria', age: 28 }
-        ]
-      }
-    )
-  }
-
-  nameChangedHandler = (event) => {
-    this.setState({
-      persons: [
-        { name: 'Martin', age: 25 },
-        { name: event.target.value, age: 28 }
-      ]
-    }
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => (p.id === id))
+    const person = { ...this.state.persons[personIndex] }
+    person.name = event.target.value
+    const persons = [...this.state.persons]
+    persons[personIndex] = person
+    this.setState({ persons: persons }
     )
   }
 
@@ -36,22 +25,26 @@ class App extends Component {
     this.setState({ showPersons: !this.state.showPersons })
   }
 
-  showPersonsFragment = () => (this.state.showPersons &&
+  deletePersonHandler = (personIndex) => {
+    // const persons = this.state.persons.slice()
+    const persons = [...this.state.persons]
+    persons.splice(personIndex, 1)
+    this.setState({ persons: persons })
+  }
+
+  showPersonsFragment = persons => (
     <div>
-      <Person
-        name={this.state.persons[0].name}
-        age={this.state.persons[0].age} >
-        Hobies
-      </Person>
-      <Person
-        name={this.state.persons[1].name}
-        age={this.state.persons[1].age}
-        click={this.switchNameHandler.bind(this, 'Andres')}
-        changed={this.nameChangedHandler}
-      >
-        Hobies
-      </Person>
-    </div>)
+      {persons.map((person, _idx) => (
+        <Person
+          key={person.id}
+          click={() => this.deletePersonHandler(_idx)}
+          name={person.name}
+          age={person.age}
+          changed={(event) => this.nameChangedHandler(event, person.id)}
+        />
+      ))}
+    </div>
+  )
 
   render() {
     return (
@@ -59,7 +52,7 @@ class App extends Component {
         <h1>Hi, I'm a React app</h1>
         <p>It's working</p>
         <button onClick={this.togglePersonsHandler}>Switch Name</button>
-        {this.showPersonsFragment()}
+        {this.state.showPersons && this.showPersonsFragment(this.state.persons)}
       </div>
     );
     // return React.createElement('div', {className: 'App' }, React.createElement('h1', null, 'Some text'))
