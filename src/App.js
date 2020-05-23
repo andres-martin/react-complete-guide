@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import { StyledButton } from './StyledComponents/StyledComponents';
-import './App.css';
+import classes from './App.css';
 import Person from './Person/Person';
 
 class App extends Component {
@@ -34,7 +34,8 @@ class App extends Component {
     this.setState({ persons: persons })
   }
 
-  showPersonsFragment = persons => (
+  showPersonsFragment = (persons) => (
+    this.state.showPersons &&
     <div>
       {persons.map((person, _idx) => (
         <Person
@@ -45,27 +46,31 @@ class App extends Component {
           changed={(event) => this.nameChangedHandler(event, person.id)}
         />
       ))}
-    </div>
+    </div> 
   )
 
   render() {
 
-    const classes = []
+    const assignedClasses = []
 
-    if (this.state.persons.length <= 2) classes.push('red');
-    if (this.state.persons.length <= 1) classes.push('bold');
+    if (this.state.persons.length <= 2) assignedClasses.push(classes.red);
+    if (this.state.persons.length <= 1) assignedClasses.push(classes.bold);
+
+    const btnClasses = [classes.Button];
+    if (this.state.showPersons) btnClasses.push(classes.Red);
 
     return (
-      <div className="App">
+      <div className={classes.App}>
         <h1>Hi, I'm a React app</h1>
-        <p className={classes.join(' ')}>It's working</p>
+        <p className={assignedClasses.join(' ')}>It's working</p>
         <button
-          alt={this.state.showPersons}
+          className={btnClasses.join(' ')}
+          // alt={this.state.showPersons} // for styled-components
           onClick={this.togglePersonsHandler}
         >
           Toggle Persons
         </button>
-        {this.state.showPersons && this.showPersonsFragment(this.state.persons)}
+        {this.showPersonsFragment(this.state.persons)}
       </div>
     );
     // return React.createElement('div', {className: 'App' }, React.createElement('h1', null, 'Some text'))
