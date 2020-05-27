@@ -1,17 +1,48 @@
 import React, { Component } from 'react';
 // import { StyledButton } from './StyledComponents/StyledComponents';
 import classes from './App.css';
-import Person from '../components/Persons/Person/Person';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log('[App.js] constructor')
+  }
+
   state = {
     persons: [
       { id: '001', name: "Martin", age: '24' },
       { id: '002', name: "Maria", age: '23' },
       { id: '003', name: "Andres", age: '23' }
     ],
-    showPersons: false
+    showPersons: false,
+    showCockpit: true
   }
+
+  static getDerivedStateFromProps(props, state) {
+    console.log('[App.js] getDerivedStateFromProps', props)
+    return state;
+  }
+
+  // componentWillMount() {
+  //   console.log('[App.js] componentWillMount')
+  // }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount')
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('[App.js] shouldComponentUpdate')
+    return true
+  }
+
+  componentDidUpdate() {
+    console.log('[App.js] componentDidUpdate')
+  }
+
+
 
   nameChangedHandler = (event, id) => {
     const personIndex = this.state.persons.findIndex(p => (p.id === id))
@@ -34,43 +65,34 @@ class App extends Component {
     this.setState({ persons: persons })
   }
 
-  showPersonsFragment = (persons) => (
+  showPersonsFragment = () => (
     this.state.showPersons &&
     <div>
-      {persons.map((person, _idx) => (
-        <Person
-          key={person.id}
-          click={() => this.deletePersonHandler(_idx)}
-          name={person.name}
-          age={person.age}
-          changed={(event) => this.nameChangedHandler(event, person.id)}
-        />
-      ))}
-    </div> 
+      <Persons
+        persons={this.state.persons}
+        clicked={this.deletePersonHandler}
+        changed={this.nameChangedHandler}
+      />
+    </div>
   )
 
   render() {
-
-    const assignedClasses = []
-
-    if (this.state.persons.length <= 2) assignedClasses.push(classes.red);
-    if (this.state.persons.length <= 1) assignedClasses.push(classes.bold);
-
-    const btnClasses = [classes.Button];
-    if (this.state.showPersons) btnClasses.push(classes.Red);
+    console.log('[App.js] render');
 
     return (
       <div className={classes.App}>
-        <h1>Hi, I'm a React app</h1>
-        <p className={assignedClasses.join(' ')}>It's working</p>
         <button
-          className={btnClasses.join(' ')}
-          // alt={this.state.showPersons} // for styled-components
-          onClick={this.togglePersonsHandler}
-        >
-          Toggle Persons
+          onClick={() => this.setState({ showCockpit: !this.state.showCockpit })}
+        > Mostrar Cokpit
         </button>
-        {this.showPersonsFragment(this.state.persons)}
+        {this.state.showCockpit &&
+          <Cockpit
+            title={this.props.appTitle}
+            personsLength={this.state.persons.length}
+            showPersons={this.state.showPersons}
+            clicked={this.togglePersonsHandler}
+          />}
+        {this.showPersonsFragment()}
       </div>
     );
     // return React.createElement('div', {className: 'App' }, React.createElement('h1', null, 'Some text'))
