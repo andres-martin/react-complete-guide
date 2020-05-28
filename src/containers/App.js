@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import classes from './App.css';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
+import WithClass from '../hoc/WithClass'
 
 class App extends Component {
   constructor(props) {
@@ -17,7 +18,8 @@ class App extends Component {
       { id: '003', name: "Andres", age: '23' }
     ],
     showPersons: false,
-    showCockpit: true
+    showCockpit: true,
+    changeCounter: 0
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -50,8 +52,10 @@ class App extends Component {
     person.name = event.target.value
     const persons = [...this.state.persons]
     persons[personIndex] = person
-    this.setState({ persons: persons }
-    )
+    this.setState((prevState, props) => ({
+      persons: persons,
+      changeCounter: prevState.changeCounter + 1
+    })) // best way to update depending state
   }
 
   togglePersonsHandler = () => {
@@ -80,7 +84,7 @@ class App extends Component {
     console.log('[App.js] render');
 
     return (
-      <div className={classes.App}>
+      <WithClass classes={classes.App}>
         <button
           onClick={() => this.setState({ showCockpit: !this.state.showCockpit })}
         > Mostrar Cokpit
@@ -93,7 +97,7 @@ class App extends Component {
             clicked={this.togglePersonsHandler}
           />}
         {this.showPersonsFragment()}
-      </div>
+      </WithClass>
     );
     // return React.createElement('div', {className: 'App' }, React.createElement('h1', null, 'Some text'))
   }
